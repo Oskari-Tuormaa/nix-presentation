@@ -3,7 +3,7 @@ title: Reproducible Dev Environments
 sub_title: with **Nix Flakes**
 author: Oskari Tuormaa
 theme:
-    name: catppuccin-mocha
+    name: catppuccin-macchiato
 ---
 
 <!-- jump_to_middle -->
@@ -260,6 +260,7 @@ Resources
 ---
 
 <!-- alignment: center -->
+<!-- font_size: 2 -->
 
 | Resource | Link |
 | -------- | ---- |
