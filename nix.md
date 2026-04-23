@@ -178,13 +178,6 @@ Commit this + the generated `flake.lock` → **env is now version-controlled**.
 
 <!-- end_slide -->
 
-<!-- jump_to_middle -->
-
-Live Demo
-===
-
-<!-- end_slide -->
-
 Bonus features
 ===
 
@@ -219,9 +212,33 @@ Your CI pipeline becomes trivial:
 * Same `flake.lock` as your local machine
 * Same compiler, same flags, same sysroot
 
+<!-- end_slide -->
+
+Bonus features - continued
+===
+
+<!-- column_layout: [1, 1] -->
+
+<!-- column: 0 -->
+
+# Just
+
+A command runner that pairs well with Nix. Define project tasks in a `justfile`:
+
+```just
+build:
+    cmake --build build/
+
+flash:
+    openocd -f board.cfg -c "program build/fw.elf verify reset exit"
+```
+
+Run with `just build` — no Makefile magic, no shell scripts scattered around.
+
+Inside `nix develop`, `just` is always available at the **exact same version**.
+
 <!-- pause -->
-<!-- reset_layout -->
----
+<!-- column: 1 -->
 
 # NixOS: A Nix based OS
 
@@ -230,6 +247,13 @@ A full Linux distro where the **entire OS** is declarative (ie. described in Nix
 * Bad update? Reboot into the previous generation from the bootloader
 * Reproduce any machine from its config in minutes
 * Shows how far the reproducibility principle can scale
+
+<!-- end_slide -->
+
+<!-- jump_to_middle -->
+
+Live Demo
+===
 
 <!-- end_slide -->
 
@@ -254,13 +278,20 @@ experimental-features = nix-commands flakes
 
 **Step 3: Add a `flake.nix` to project**
 
+<!-- pause -->
+
+**Step 4: Enter dev shell**
+
+```bash
+nix develop
+```
+
 <!-- end_slide -->
 
 Resources
 ---
 
 <!-- alignment: center -->
-<!-- font_size: 2 -->
 
 | Resource | Link |
 | -------- | ---- |
