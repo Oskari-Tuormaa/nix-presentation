@@ -70,7 +70,7 @@ Nix is a package manager that runs on any Linux or macOS system, alongside your 
 
 <!-- column: 0 -->
 
-**Traditional package manager (`apt`, `brew`)**
+**Traditional package manager (`apt`, `pacman`, ⋯)**
 
 * Global mutable state
 * Upgrading X can break Y
@@ -93,28 +93,35 @@ Nix vs Docker
 
 Both solve reproducibility — but in very different ways:
 
-<!-- column_layout: [1, 1] -->
+<!-- alignment: center -->
 
-<!-- column: 0 -->
 
-**Docker**
+| Docker | Nix |
+|---|---|
+| Ships a full OS image | Ships only the exact packages needed |
+| Runs in an isolated container — _separate_ from your host | Runs directly on your host — _no_ virtualisation layer |
+| Dev workflow: mount source, exec into container | Dev workflow: `nix develop`, then work normally |
+| Requires a daemon + root (or rootless workarounds) | No daemon, no root, no container overhead |
 
-* Ships a full OS image
-* Runs in an isolated container — _separate_ from your host
-* Dev workflow: mount source, exec into container
-* Requires a daemon + root (or rootless workarounds)
-* Image = black box unless you audit the `Dockerfile`
 
-<!-- column: 1 -->
+<!-- pause -->
 
-**Nix**
+---
 
-* Ships only the exact packages needed
-* Runs directly on your host — _no_ virtualisation layer
-* Dev workflow: `nix develop`, then work normally
-* No daemon, no root, no container overhead
+Best of both worlds:
 
-<!-- reset_layout -->
+```docker
+FROM nixos/nix:latest
+
+COPY flake.nix flake.lock* /nix-build/
+WORKDIR /nix-build
+
+RUN nix develop /nix-build --build --extra-experimental-features "nix-command flakes"
+
+WORKDIR /workspace
+ENTRYPOINT ["nix", "develop", "/nix-build", "--extra-experimental-features", \
+    "nix-command", "--extra-experimental-features", "flakes"]
+```
 
 <!-- end_slide -->
 
@@ -129,15 +136,22 @@ Flakes: pinned, shareable environments
 ---
 
 A **flake** is two files committed to your repo:
+<!-- alignment: center -->
+
 
 | File | Purpose |
 | ------------ | ----------------------------------------------- |
 | `flake.nix` | Declares inputs (packages, toolchains) and outputs (dev shell) |
 | `flake.lock` | Pins every input to an exact revision (automatically generated) |
 
+
+<!-- alignment: left -->
 <!-- pause -->
 
 ---
+
+<!-- column_layout: [1,1] -->
+<!-- column: 0 -->
 
 `flake.lock` is like `package-lock.json` or `Cargo.lock` — but for **your entire toolchain**.
 
@@ -146,6 +160,15 @@ Anyone with Nix runs one command and gets an **identical shell**:
 ```bash
 nix develop
 ```
+
+<!-- column: 1 -->
+<!-- pause -->
+
+> [!warning]
+> Flakes are an experimental feature of Nix...
+<!-- pause -->
+
+... but they're also the **de facto standard** for modern Nix usage.
 
 <!-- end_slide -->
 
