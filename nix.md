@@ -54,7 +54,9 @@ What is Nix?
 Nix: a functional package manager
 ---
 
-Nix is a package manager that runs on any Linux or macOS system, alongside your existing tools.
+Nix is a declarative package manager that runs on any Linux or macOS system (WSL on Windows), alongside your existing tools.
+
+Nix is also a functional programming language, designed specifically for describing configuration.
 
 <!-- pause -->
 
@@ -122,6 +124,53 @@ WORKDIR /workspace
 ENTRYPOINT ["nix", "develop", "/nix-build", "--extra-experimental-features", \
     "nix-command", "--extra-experimental-features", "flakes"]
 ```
+
+<!-- end_slide -->
+
+The problem with classic Nix
+---
+
+Classic Nix expressions import packages from a channel — a moving pointer to nixpkgs:
+
+```nix
+{ pkgs ? import <nixpkgs> {} }:
+pkgs.mkShell { packages = [ pkgs.gcc-arm-embedded ]; }
+```
+
+<!-- pause -->
+
+**`<nixpkgs>` is resolved from the user's local channel** — not from the repo.
+
+This is no different from `apt`: pinning `focal` in `/etc/apt/sources.list` still moves forward on every `apt update`. Both channels are just rolling pointers with no lockfile.
+
+<!-- pause -->
+
+---
+
+<!-- column_layout: [1, 1] -->
+
+<!-- column: 0 -->
+
+This means:
+
+* Two developers on different channel versions → **different compilers**
+* You update your channel → build silently breaks
+* CI uses whatever nixpkgs is configured on the runner
+* No record in version control of **what was actually used**
+
+<!-- column: 1 -->
+
+<!-- pause -->
+
+Third-party tools emerged to fill the gap:
+
+* `niv` — pins nixpkgs and other sources in a `sources.json`
+* `npins` — similar, simpler alternative to niv
+* Manual pinning with `fetchTarball` + an explicit sha256
+
+These work, but they're bolted on — not part of the Nix language itself.
+
+<!-- reset_layout -->
 
 <!-- end_slide -->
 
